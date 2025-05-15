@@ -29,7 +29,7 @@ dayLength = (24-dayBeginsHour)*60
 
 baseLine = [0]*planningHorizon
 
-    # Запрашиваем количество дней
+
 temp_root = tk.Tk()
 temp_root.withdraw()
 numberOfDays = simpledialog.askinteger(
@@ -917,41 +917,107 @@ class TardisUI:
         controls_frame = tk.Frame(self.scrollable_frame, bg="#003b6f")
         controls_frame.grid(row=0, column=0, sticky="ew", pady=10)
         
-        add_button = tk.Button(controls_frame, text="+ Новое событие", 
+        # Группа для управления событиями
+        left_buttons = tk.Frame(controls_frame, bg="#003b6f")
+        left_buttons.pack(side="top", padx=10, pady=2)
+        
+        add_button = tk.Button(left_buttons, text="+ Новое событие", 
                              command=self.add_event_dialog)
-        add_button.pack(side="left", padx=5)
-
-
+        add_button.pack(side="left", padx=2)
         
-        schedule_btn = tk.Button(controls_frame, text="Показать расписание", 
+        schedule_btn = tk.Button(left_buttons, text="Показать расписание", 
                                command=self.show_schedule)
-        schedule_btn.pack(side="left", padx=5)
-
-        upd_btn = tk.Button(controls_frame, text = "Обновить расписание", command = self.update_schedule)
-        upd_btn.pack(padx=5)
-
-
-        vsave_btn = tk.Button(controls_frame, text="Сохранить проект", 
-                           command=self.save_vortex)
-        vsave_btn.pack(side="bottom", padx=5)
-
-        vload_btn = tk.Button(controls_frame, text="Загрузить проект", 
-                           command=self.load_vortex)
-        vload_btn.pack(side="bottom", padx=5)
+        schedule_btn.pack(side="left", padx=2)
         
-        save_btn = tk.Button(controls_frame, text="Сохранить", 
+        upd_btn = tk.Button(left_buttons, text="Обновить расписание", 
+                          command=self.update_schedule)
+        upd_btn.pack(side="left", padx=2)
+        
+        # Группа для работы с расписанием
+        center_buttons = tk.Frame(controls_frame, bg="#003b6f")
+        center_buttons.pack(side="right", padx=10, pady=2)
+        
+        save_btn = tk.Button(center_buttons, text="Экспорт", 
                            command=self.save_schedule)
-        save_btn.pack(side="left", padx=5)
-
-        load_btn = tk.Button(controls_frame, text="Загрузить", 
-                           command=self.load_schedule)
-        load_btn.pack(side="left", padx=5)
+        save_btn.pack(side="left", padx=2)
+        
+        # load_btn = tk.Button(center_buttons, text="Загрузить", 
+        #                    command=self.load_schedule)
+        # load_btn.pack(side="left", padx=2)
+        
+        # Группа для работы с проектом
+        right_buttons = tk.Frame(controls_frame, bg="#003b6f")
+        right_buttons.pack(side="right", padx=10, pady=20)
+        
+        vsave_btn = tk.Button(right_buttons, text="Сохранить проект", 
+                            command=self.save_vortex)
+        vsave_btn.pack(side="left", padx=2)
+        
+        vload_btn = tk.Button(right_buttons, text="Загрузить проект", 
+                            command=self.load_vortex)
+        vload_btn.pack(side="left", padx=2)
+        
+        # Настройка растягивания для основного фрейма
+        controls_frame.columnconfigure(0, weight=1)
+        controls_frame.columnconfigure(1, weight=1)
+        controls_frame.columnconfigure(2, weight=1)
 
         for index, row in enumerate(self.vortex.matrix, start=1):
             event_id = row[0]
             event_data = self.vortex.data[event_id]
             self.create_event_card(index, event_id, event_data)
             
+    # def save_vortex(self):
+    #     file_path = filedialog.asksaveasfilename(
+    #         defaultextension=".pkl",
+    #         filetypes=[("Pickle файлы", "*.pkl"), ("Все файлы", "*.*")]
+    #     )
+    #     if not file_path:
+    #         return
+
+    #     try:
+    #         with open(file_path, 'wb') as f:
+    #             pickle.dump(self.vortex, f)
+    #         messagebox.showinfo("Успех", "Расписание успешно сохранено!")
+    #     except Exception as e:
+    #         messagebox.showerror("Ошибка", f"Не удалось сохранить файл: {str(e)}")
+
+    # def load_vortex(self):
+    #     file_path = filedialog.askopenfilename(
+    #         filetypes=[("Pickle файлы", "*.pkl"), ("Все файлы", "*.*")]
+    #     )
+    #     if not file_path:
+    #         return
+
+    #     try:
+    #         with open(file_path, 'rb') as f:
+    #             new_vortex = pickle.load(f)
+            
+    #         if not isinstance(new_vortex, TimeVortex):
+    #             raise TypeError("Некорректный формат файла")
+            
+    #         self.vortex = new_vortex
+    #         self.refresh_ui()
+    #         messagebox.showinfo("Успех", "Проект успешно загружено!")
+    #     except Exception as e:
+    #         messagebox.showerror("Ошибка", f"Не удалось загрузить файл: {str(e)}")
+
+    
+    # def save_schedule(self):
+    #     file_path = filedialog.asksaveasfilename(
+    #         defaultextension=".pkl",
+    #         filetypes=[("Pickle файлы", "*.pkl"), ("Все файлы", "*.*")]
+    #     )
+    #     if not file_path:
+    #         return
+
+    #     try:
+    #         with open(file_path, 'wb') as f:
+    #             pickle.dump(self.current_schedule, f)
+    #         messagebox.showinfo("Успех", "Расписание успешно сохранено!")
+    #     except Exception as e:
+    #         messagebox.showerror("Ошибка", f"Не удалось сохранить файл: {str(e)}")
+
     def save_vortex(self):
         file_path = filedialog.asksaveasfilename(
             defaultextension=".pkl",
@@ -959,11 +1025,15 @@ class TardisUI:
         )
         if not file_path:
             return
-
+    
         try:
+            data_to_save = {
+                'vortex': self.vortex,
+                'schedule': self.current_schedule
+            }
             with open(file_path, 'wb') as f:
-                pickle.dump(self.vortex, f)
-            messagebox.showinfo("Успех", "Расписание успешно сохранено!")
+                pickle.dump(data_to_save, f)
+            messagebox.showinfo("Успех", "Проект успешно сохранён!")
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось сохранить файл: {str(e)}")
 
@@ -973,35 +1043,46 @@ class TardisUI:
         )
         if not file_path:
             return
-
+    
         try:
             with open(file_path, 'rb') as f:
-                new_vortex = pickle.load(f)
+                data = pickle.load(f)
             
-            if not isinstance(new_vortex, TimeVortex):
-                raise TypeError("Некорректный формат файла")
+            if 'vortex' not in data or not isinstance(data['vortex'], TimeVortex):
+                raise TypeError("Некорректный формат файла проекта")
             
-            self.vortex = new_vortex
+            self.vortex = data['vortex']
+            self.current_schedule = data.get('schedule', None)
             self.refresh_ui()
-            messagebox.showinfo("Успех", "Проект успешно загружено!")
+            messagebox.showinfo("Успех", "Проект успешно загружен!")
         except Exception as e:
             messagebox.showerror("Ошибка", f"Не удалось загрузить файл: {str(e)}")
 
-    
     def save_schedule(self):
+        if not self.current_schedule:
+            messagebox.showwarning("Предупреждение", "Нет расписания для сохранения.")
+            return
+    
         file_path = filedialog.asksaveasfilename(
-            defaultextension=".pkl",
-            filetypes=[("Pickle файлы", "*.pkl"), ("Все файлы", "*.*")]
+            defaultextension=".txt",
+            filetypes=[("Текстовые файлы", "*.txt"), ("Все файлы", "*.*")]
         )
         if not file_path:
             return
-
+    
         try:
-            with open(file_path, 'wb') as f:
-                pickle.dump(self.current_schedule, f)
-            messagebox.showinfo("Успех", "Расписание успешно сохранено!")
+            with open(file_path, 'w', encoding='utf-8') as f:
+                for day_data in self.current_schedule:
+                    f.write(f"=== День {day_data['day']} ===\n")
+                    for event in day_data['events']:
+                        intervals = ", ".join(event["intervals"])
+                        priority = self.PRIORITY_OPTIONS[event["priority"]]
+                        f.write(f"• {event['name']}\n")
+                        f.write(f"  Приоритет: {priority}\n")
+                        f.write(f"  Время: {intervals}\n\n")
+            messagebox.showinfo("Успех", "Расписание экспортировано в текстовый файл!")
         except Exception as e:
-            messagebox.showerror("Ошибка", f"Не удалось сохранить файл: {str(e)}")
+            messagebox.showerror("Ошибка", f"Ошибка при экспорте: {str(e)}")
 
     def load_schedule(self):
         file_path = filedialog.askopenfilename(
@@ -1361,7 +1442,7 @@ if __name__ == "__main__":
     vortex = TimeVortex(TimeMatrix([]))
     root = tk.Tk()
     root.geometry("445x600")
-    root.iconbitmap('appicon.ico')
+    # root.iconbitmap('appicon.ico')
     app = TardisUI(root, vortex)
     root.mainloop()
     
